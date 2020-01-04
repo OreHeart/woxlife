@@ -55,5 +55,8 @@
     </navigator>
   </view>
 
+  <view>
+    <input type="text"></input>
+  </view>
 
 </view>
