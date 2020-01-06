@@ -7,7 +7,9 @@ Page({
     userInfo: {},
     logged: false,
     takeSession: false,
-    requestResult: ''
+    requestResult: '',
+    inputText: '',
+    textArr: []
   },
 
   onLoad: function() {
@@ -16,6 +18,24 @@ Page({
         url: '../chooseLib/chooseLib',
       })
       return
+    }
+    console.log(this.data)
+    if (app.globalData.openid) {
+      console.log(app.globalData.openid)
+      this.onQuery()
+    } else {
+      wx.cloud.callFunction({
+        name: 'login',
+        data: {},
+        success: res => {
+          console.log(res.result.openid)
+          app.globalData.openid = res.result.openid
+          this.onQuery()
+        },
+        fail: err => {
+          console.log(err)
+        }
+      })
     }
 
     // 获取用户信息
@@ -34,6 +54,7 @@ Page({
         }
       }
     })
+
   },
 
   onGetUserInfo: function(e) {
@@ -116,5 +137,64 @@ Page({
       }
     })
   },
+
+  bindKeyInput: function (e) {
+    this.setData({
+      inputText: e.detail.value
+    })
+  },
+
+  onAdd: function () {
+    let that = this
+    console.log(this.data.inputText)
+    const db = wx.cloud.database()
+    db.collection('text-hearts').add({
+      data: {
+        count: 1,
+        text: this.data.inputText
+      },
+      success: res => {
+        // 在返回结果中会包含新创建的记录的 _id
+        this.setData({
+          counterId: res._id,
+          count: 1
+        })
+        wx.showToast({
+          title: '新增记录成功',
+        })
+        console.log('[数据库] [新增记录] 成功，记录 _id: ', res._id)
+      },
+      fail: err => {
+        wx.showToast({
+          icon: 'none',
+          title: '新增记录失败'
+        })
+        console.error('[数据库] [新增记录] 失败：', err)
+      }
+    })
+  },
+
+  onQuery: function () {
+    const db = wx.cloud.database()
+    db.collection('text-hearts').where({
+      _openid: app.globalData.openid
+    }).get({
+      success: res => {
+        let arr = []
+        for (let i=0;i<res.data.length;i++) {
+          if (res.data[i].text) {
+            arr.push({text: res.data[i].text})
+          }
+        }
+        this.setData({
+          textArr: arr
+        })
+        console.log(this.data.textArr)
+      },
+      fail: err => {
+        console.log(err)
+      }
+    })
+  }
 
 })

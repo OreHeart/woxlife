@@ -7,7 +7,7 @@
       <text class="request-text">数据库指引</text>
     </view>
     <view class="list-item">
-      <text class="request-text" wx:for="{{7}}" style="color: {{step === index + 1 ? 'red': 'black'}}">{{index + 1}}</text>
+      <text class="request-text" wx:for="{{7}}" wx:key="index" style="color: {{step === index + 1 ? 'red': 'black'}}">{{index + 1}}</text>
     </view>
     <view class="list-item" wx:if="{{openid}}">
       <text class="request-text">openid：{{openid}}</text>

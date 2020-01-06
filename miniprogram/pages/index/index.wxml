@@ -55,8 +55,10 @@
     </navigator>
   </view>
 
-  <view>
-    <input type="text"></input>
+  <view class="uploader">
+    <navigator url="../moodInn/moodInn" open-type="navigate" class="uploader-text">
+      <text>心情驿站</text>
+    </navigator>
   </view>
 
 </view>

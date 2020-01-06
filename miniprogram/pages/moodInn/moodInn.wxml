@@ -1,0 +1,14 @@
+<!--miniprogram/pages/moodInn/moodInn.wxml-->
+<view class="container">
+  <view class="old-mood">
+    <text wx:for="{{textArr}}" wx:key="index" class="old-mood-text">{{item.text}}</text>
+  </view>
+  <view class="new-mood">
+    <!-- <textarea type="text" class="mood-input" auto-height bindblur="bindTextAreaBlur"></textarea>
+    <text bindtap="onAdd">提交文字</text> -->
+    <form bindsubmit="bindFormSubmit">
+      <textarea placeholder="写写小心情" name="textarea" class="new-mood-text"/>
+      <button form-type="submit" class="new-mood-btn"> 提交 </button>
+    </form>
+  </view>
+</view>
