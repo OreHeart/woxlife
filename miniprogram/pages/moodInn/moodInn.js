@@ -86,6 +86,9 @@ Page({
     console.log(this.data.inputText)
   },
 
+  /**
+   * 添加数据到数据库
+   */
   onAdd: function () {
     let that = this
     console.log(this.data.inputText)
@@ -117,6 +120,9 @@ Page({
     })
   },
 
+  /**
+   * 获取数据库数据
+   */
   onQuery: function () {
     const db = wx.cloud.database()
     db.collection('text-hearts').where({
@@ -124,14 +130,17 @@ Page({
     }).get({
       success: res => {
         let arr = []
+        let idArr = []
         for (let i = 0; i < res.data.length; i++) {
           if (res.data[i].text) {
             arr.push({ text: res.data[i].text })
+            idArr.push(res.data[i]._id)
           }
         }
         this.setData({
           textArr: arr
         })
+        app.globalData.idArr = idArr
         console.log(this.data.textArr)
       },
       fail: err => {
@@ -140,11 +149,63 @@ Page({
     })
   },
 
-  bindFormSubmit: function (e) {
-    this.setData({
-      inputText: e.detail.value.textarea
+  /**
+   * 删除数据库数据
+   */
+  onRemove: function (e) {
+    let index = e.currentTarget.dataset['index']
+    if (app.globalData.idArr[index]) {
+      const db = wx.cloud.database()
+      db.collection('text-hearts').doc(app.globalData.idArr[index]).remove({
+        success: res => {
+          wx.showToast({
+            title: '删除成功',
+          })
+          this.onQuery()
+        },
+        fail: err => {
+          wx.showToast({
+            icon: 'none',
+            title: '删除失败',
+          })
+          console.error('[数据库] [删除记录] 失败：', err)
+        }
+      })
+    } else {
+      wx.showToast({
+        title: '无记录可删，请见创建一个记录',
+      })
+    }
+  },
+
+  /**
+   * 修改数据
+   */
+  onChangeData: function () {
+    const db = wx.cloud.database()
+    const newCount = this.data.count + 1
+    db.collection('counters').doc(app.globalData.idArr[0]).update({
+      data: {
+        text: this.data.inputText
+      },
+      success: res => {
+        console.log(res)
+      },
+      fail: err => {
+        icon: 'none',
+          console.error('[数据库] [更新记录] 失败：', err)
+      }
     })
+  },
+
+  bindFormSubmit: function (e) {
     this.onAdd()
+  },
+
+  bindInput: function (e) {
+    this.setData({
+      inputText: e.detail.value
+    })
   }
 
 })

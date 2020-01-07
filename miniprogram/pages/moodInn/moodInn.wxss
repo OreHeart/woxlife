@@ -14,11 +14,26 @@
   flex-direction: column;
 }
 
-.old-mood-text {
+.old-mood-model {
+  display: flex;
   width: 100%;
   border-bottom: 1px solid #0079fe;
 }
 
+.old-mood-text {
+  flex: 1;
+}
+
+.old-mood-model button {
+  font-size: 12px;
+}
+
 .new-mood {
   width: 100%;
+}
+
+.new-mood-text {
+  width: 100%;
+  border-radius: 5px;
+  background: #ffffff;
 }
