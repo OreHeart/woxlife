@@ -1,0 +1,26 @@
+<!--miniprogram/pages/printer/printer.wxml.wxml-->
+<view class="container">
+  <view class="view-top">
+    <input class="ip-input" bindinput="bindInput" type="text" value="127.0.0.1:3000" placeholder="ip:"/>
+    <text bindtap="onConnect" class="connect" wx:if="{{!state}}"> 连接 </text>
+    <text bindtap="disConnect" class="dis-connect"  wx:if="{{state}}"> 断开 </text>
+  </view>
+  <button bindtap="onSend" class="send"> 发送数据 </button>
+  <view class="view-controll">
+    <button class="move-right" bindtap="moveRight">+</button>
+    <view class="view-controll-current">
+      <text bindtap="choose" data-index="0" class="{{position == 0 ? 'current-check' : ''}}">x</text>
+      <text bindtap="choose" data-index="1" class="{{position == 1 ? 'current-check' : ''}}">y</text>
+      <text bindtap="choose" data-index="2" class="{{position == 2 ? 'current-check' : ''}}">z</text>
+    </view>
+    <button class="move-left" bindtap="moveLeft">-</button>
+    <button class="move-home" bindtap="moveHome">归位</button>
+    <button class="get-list" bindtap="getFile">获取文件列表</button>
+  </view>
+  <view class="file-list">
+    <view class="file-list-item" wx:for="{{fileList}}" wx:key="index">
+      <text class="file-name">{{index}}.{{item.name}}</text>
+      <text bindtap="startPrint" data-index="{{index}}">开始打印</text>
+    </view>
+  </view>
+</view>
