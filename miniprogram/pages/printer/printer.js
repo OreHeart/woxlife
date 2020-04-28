@@ -152,12 +152,13 @@ Page({
     mtopic: '/printers/pSSto04rvSJPNqTVt7p3qHLhquIxMjtbN37Rcf5m8DzyM5Mj/',
     ip: '127.0.0.1:3000',
     state: false,
+    printerState: 'free',
+    bedTemp: 0,
+    cbedTemp: 0,
+    extTemp: 0,
+    cextTemp: 0,
     position: 0,
-    fileList: [
-      { name: 'xxx.gcode' },
-      { name: 'xxxx.gcode' },
-      { name: 'xxxxx.gcode' }
-    ]
+    fileList: []
   },
 
   /**
@@ -171,7 +172,11 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    
+    if (client.connected) {
+      this.setData({
+        state: true
+      })
+    }
   },
 
   /**
@@ -227,7 +232,7 @@ Page({
         state: true
       })
       console.log('connect success')
-      client.subscribe('/printers/pSSto04rvSJPNqTVt7p3qHLhquIxMjtbN37Rcf5m8DzyM5Mj/', function (e) {
+      client.subscribe('/printers/pSSto04rvSJPNqTVt7p3qHLhquIxMjtbN37Rcf5m8DzyM5Mj/client/#', function (e) {
         console.log('subscribe success')
       })
     })
@@ -235,6 +240,18 @@ Page({
       try {
         console.log(topic, JSON.parse(message))
         let json = JSON.parse(message)
+        if (json.status) {
+          this.setData({
+            status: json.status,
+            bedTemp: json.bed_temperature,
+            extTemp: json.temperature
+          })
+        }
+        if (json.files) {
+          this.setData({
+            fileList: json.files
+          })
+        }
       } catch (e) {
         console.log(e, message.toString())
       }
@@ -252,20 +269,17 @@ Page({
   },
 
   /**
-   * 发送数据
-   */
-  onSend: function () {
-    let cmd = '{"command": "feedrate", "factor": ' + 123 + '}'
-    this.publish('controller', 'post', 'printer/printhead', cmd)
-  },
-
-  /**
    * 数据处理
    */
   publish: function (topic, type, restapi, cmd) {
     topic = this.data.mtopic + topic
     if (!client.connected) {
       console.log('client disconnecting')
+      wx.showToast({
+        title: '请先连接打印机！！！',
+        icon: 'none',
+        duration: 1500
+      })
       return
     }
     // base64編碼
@@ -289,6 +303,89 @@ Page({
     this.setData({
       state: false
     })
+  },
+
+  /**
+   * 设置热床温度
+   */
+  bindBed: function (e) {
+    this.setData({
+      cbedTemp: e.detail.value
+    })
+  },
+
+  setBed: function () {
+    let val = this.data.cbedTemp || 50
+    let cmd = '{"command": "target", "target": ' + val + '}'
+    console.log(cmd)
+    let topic = this.data.mtopic + 'controller'
+    this.publish(topic, 'post', 'printer/bed', cmd)
+  },
+
+  /**
+   * 设置挤出头温度
+   */
+  bindExt: function (e) {
+    this.setData({
+      cextTemp: e.detail.value
+    })
+  },
+
+  setExt: function () {
+    let val = this.data.cextTemp || 50
+    let cmd = '{"command": "target", "targets": {"tool0": ' + val + '}}'
+    console.log(cmd)
+    let topic = this.data.mtopic + 'controller'
+    this.publish(topic, 'post', 'printer/tool', cmd)
+  },
+
+  /**
+   * 订阅
+   */
+  bindPrinter: function () {
+    if (!client.connected) {
+      wx.showToast({
+        title: '请先连接打印机！！！',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+    client.subscribe('123', function (e) {
+      console.log('bind')
+    })
+  },
+
+  /**
+   * 取消订阅
+   */
+  unbindPrinter: function () {
+    if (!client.connected) {
+      wx.showToast({
+        title: '请先连接打印机！！！',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+    client.unsubscribe('123', function (e) {
+      console.log('unbind')
+    })
+  },
+
+  /**
+   * 测试信息
+   */
+  sendTest: function () {
+    if (!client.connected) {
+      wx.showToast({
+        title: '请先连接打印机！！！',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+    client.publish('123', '测试信息')
   },
 
   /**
@@ -354,6 +451,15 @@ Page({
    * 获取文件列表
    */
   getFile: function () {
+    this.setData({
+      fileList: [
+        { name: 'xxx.gcode' },
+        { name: 'xxxx.gcode' },
+        { name: 'xxxxx.gcode' },
+        { name: 'xxxxxx.gcode' },
+        { name: 'xxxxxxx.gcode' }
+      ]
+    })
     let topic = this.data.mtopic + 'controller'
     this.publish(topic, 'get', 'files', '')
   },
@@ -367,5 +473,32 @@ Page({
     let index = e.currentTarget.dataset['index']
     console.log(this.data.fileList[index].name)
     this.publish(topic, 'post', 'files/local/' + this.data.fileList[index].name, cmd)
+  },
+
+  /**
+   * 恢复打印
+   */
+  restartPrint: function () {
+    let cmd = '{"command": "pause", "action": "resume"}'
+    let topic = this.data.mtopic + 'controller'
+    this.publish(topic, 'post', 'job', cmd)
+  },
+
+  /**
+   * 暂停打印
+   */
+  pausePrint: function () {
+    let cmd = '{"command": "pause", "action": "pause"}'
+    let topic = this.data.mtopic + 'controller'
+    this.publish(topic, 'post', 'job', cmd)
+  },
+
+  /**
+   * 取消打印
+   */
+  cancelPrint: function () {
+    let cmd = '{"command": "cancel"}'
+    let topic = this.data.mtopic + 'controller'
+    this.publish(topic, 'post', 'job', cmd)
   }
 })

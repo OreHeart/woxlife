@@ -18,14 +18,45 @@
   margin-left: 20px;
 }
 
-.view-controll button {
-  border: 1px solid;
+.view-printer-information {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
 }
 
-.move-home,
-.get-list
-{
+.view-printer-information text {
+  padding: 5px;
+}
+
+.temp-setting {
+  display: flex;
+  flex-direction: column;
+  padding-left: 5px;
+}
+
+.temp-setting-item {
+  display: flex;
   margin-top: 5px;
+}
+
+.temp-setting-item input {
+  border: 1px solid;
+  border-radius: 5px;
+  width: 80px;
+}
+
+.temp-setting-item button {
+  border: 1px solid;
+  font-size: 12px;
+  padding: 0;
+  font-weight: 400;
+  line-height: 22px;
+  min-height: 0;
+  margin-left: 5px;
+}
+
+.view-controll button {
+  border: 1px solid;
 }
 
 .view-controll-current {
@@ -44,8 +75,26 @@
   color: white;
 }
 
+.view-controll-btn {
+  display: flex;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.view-controll-btn button {
+  flex: 1;
+  border: 1px solid;
+  font-size: 12px;
+  padding: 0;
+  font-weight: 400;
+  line-height: 40px;
+  min-width: 0;
+}
+
 .file-list {
   width: 100%;
+  height: 160px;
+  overflow-y: scroll;
 }
 
 .file-list-item {
@@ -56,4 +105,16 @@
 
 .file-list-item .file-name {
   flex: 1;
+}
+
+.file-list-btn {
+  display: flex;
+  width: 100%;
+}
+
+.file-list-btn button {
+  border: 1px solid;
+  font-size: 12px;
+  font-weight: 400;
+  min-height: 0;
 }
