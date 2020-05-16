@@ -7,9 +7,11 @@
   </view>
 
   <view class="view-printer-information">
-    <text class="printer-state"> 打印机当前状态: {{printerState}} </text>
-    <text class="printer-bed">热床温度: {{bedTemp}}℃ </text>
-    <text class="printer-ext">挤出头温度: {{extTemp}}℃</text>
+    <view class="temp-show">
+      <text class="printer-state"> 打印机当前状态: {{printerState}} </text>
+      <text class="printer-bed">热床温度: {{bedTemp}}℃ </text>
+      <text class="printer-ext">挤出头温度: {{extTemp}}℃</text>
+    </view>
     <view class="temp-setting">
       <view class="temp-setting-item">
         <input bindinput="bindBed" placeholder="热床温度"/>

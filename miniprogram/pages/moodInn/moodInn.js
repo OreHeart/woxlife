@@ -9,7 +9,9 @@ Page({
    */
   data: {
     inputText: '',
-    textArr: []
+    textArr: [],
+    showList: false,
+    reverseText: ''
   },
 
   /**
@@ -206,6 +208,26 @@ Page({
     this.setData({
       inputText: e.detail.value
     })
-  }
+  },
 
+  show: function () {
+    this.setData({
+      showList: true
+    })
+  },
+
+  hide: function () {
+    this.setData({
+      showList: false
+    })
+  },
+
+  /**
+   * 翻转文字
+   */
+  onReverse: function () {
+    this.setData({
+      reverseText: this.data.inputText.split('').reverse().join('')
+    })
+  }
 })

@@ -1,7 +1,11 @@
 <!--miniprogram/pages/moodInn/moodInn.wxml-->
 <view class="container">
   <view class="old-mood">
-    <view wx:for="{{textArr}}" wx:key="index" class="old-mood-model">
+    <view class="old-mood-btn">
+      <button bindtap="show" wx:if="{{!showList}}">显示所有</button>
+      <button bindtap="hide" wx:if="{{showList}}">隐藏所有</button>
+    </view>
+    <view wx:for="{{textArr}}" wx:key="index" class="old-mood-model" wx:if="{{showList}}">
       <text class="old-mood-text">{{item.text}}</text>
       <button size="mini" bindtap="onRemove" data-index="{{index}}">删除</button>
     </view>
@@ -11,5 +15,7 @@
     <text bindtap="onAdd">提交文字</text> -->
     <textarea bindinput="bindInput" placeholder="写写小心情" name="textarea" class="new-mood-text"/>
     <button bindtap="onAdd" class="new-mood-btn"> 提交 </button>
+    <button bindtap="onReverse"> 文字翻转 </button>
+    <text class="reverse-text" selectable="true">{{reverseText}}</text>
   </view>
 </view>

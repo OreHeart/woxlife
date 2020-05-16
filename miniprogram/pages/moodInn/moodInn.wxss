@@ -15,8 +15,8 @@
 
 .old-mood-model {
   display: flex;
-  width: 100%;
-  border-bottom: 1px solid #0079fe;
+  border-bottom: 1px solid #efefef;
+  padding: 5px;
 }
 
 .old-mood-text {
